@@ -30,11 +30,6 @@ window.run = async function () {
   const strategyA = Strategies[strategyASelect.value];
   const strategyB = Strategies[strategyBSelect.value];
   const noise = Number(document.getElementById("noise").value);
-  const coopA = simHistoryCount("C", rowA.childNodes);
-  const defectA = simHistoryCount("D", rowA.childNodes);
-
-  const coopB = simHistoryCount("C", rowB.childNodes);
-  const defectB = simHistoryCount("D", rowB.childNodes);
 
   const sim = createSimulation({
     strategyA,
@@ -52,9 +47,20 @@ window.run = async function () {
 
   let final;
 
+  let coopA = 0;
+  let defectA = 0;
+  let coopB = 0;
+  let defectB = 0;
+
   for (let i = 0; i < rounds; i++) {
     const result = sim.step();
     final = result;
+
+    if (result.moveA === "C") coopA++;
+    else defectA++;
+
+    if (result.moveB === "C") coopB++;
+    else defectB++;
 
     rowA.appendChild(createCircle(result.moveA));
     rowB.appendChild(createCircle(result.moveB));
@@ -77,13 +83,13 @@ Winner: ${
         : "Tie"
   }
 
-Player A:
-Cooperate: ${coopA}
-Defect: ${defectA}
+    Player A:
+Cooperate: ${coopA} (${coopA / rounds * 100}%)
+Defect: ${defectA} (${defectA / rounds * 100}%)
 
-Player B:
-Cooperate: ${coopB}
-Defect: ${defectB}
+    Player B:
+Cooperate: ${coopB} (${coopB / rounds * 100}%)
+Defect: ${defectB} (${defectB / rounds * 100}%)
 `;
 
   updateLeaderboard(
@@ -96,7 +102,6 @@ Defect: ${defectB}
   renderLeaderboard();
   renderChart();
 };
-
 function renderLeaderboard() {
   const board = loadLeaderboard();
   const container = document.getElementById("leaderboard");

@@ -21,7 +21,6 @@ export const basicStrategies = {
     const last = opponentHistory[opponentHistory.length - 1];
 
     if (last === "D") {
-      // 30% chance to forgive
       return Math.random() < 0.3 ? "C" : "D";
     }
 
@@ -41,9 +40,9 @@ export const basicStrategies = {
     const lastOpp = opponentHistory[opponentHistory.length - 1];
 
     if (lastMy === lastOpp) {
-      return lastMy; // stay
+      return lastMy; 
     } else {
-      return lastMy === "C" ? "D" : "C"; // switch
+      return lastMy === "C" ? "D" : "C";
     }
   },
 
@@ -54,12 +53,10 @@ export const basicStrategies = {
       return testMoves[myHistory.length];
     }
 
-    // if opponent ever defected → play TFT
     if (opponentHistory.includes("D")) {
       return opponentHistory[opponentHistory.length - 1];
     }
 
-    // otherwise exploit
     return "D";
   },
 };

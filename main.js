@@ -2,7 +2,6 @@ import { createSimulation } from "./engine/stepSimulation.js";
 import { Strategies } from "./strategies/index.js";
 import { updateLeaderboard, loadLeaderboard } from "./utils/leaderboard.js";
 
-// dropdown setup
 const strategyASelect = document.getElementById("strategyA");
 const strategyBSelect = document.getElementById("strategyB");
 
@@ -30,12 +29,18 @@ window.run = async function () {
 
   const strategyA = Strategies[strategyASelect.value];
   const strategyB = Strategies[strategyBSelect.value];
-const noise = Number(document.getElementById("noise").value);
+  const noise = Number(document.getElementById("noise").value);
+  const coopA = simHistoryCount("C", rowA.childNodes);
+  const defectA = simHistoryCount("D", rowA.childNodes);
+
+  const coopB = simHistoryCount("C", rowB.childNodes);
+  const defectB = simHistoryCount("D", rowB.childNodes);
+
   const sim = createSimulation({
     strategyA,
     strategyB,
     payoff: { T: 5, R: 3, P: 1, S: 0 },
-    noise
+    noise,
   });
 
   const rowA = document.getElementById("rowA");
@@ -54,14 +59,12 @@ const noise = Number(document.getElementById("noise").value);
     rowA.appendChild(createCircle(result.moveA));
     rowB.appendChild(createCircle(result.moveB));
 
-    // auto scroll
     rowA.scrollLeft = rowA.scrollWidth;
     rowB.scrollLeft = rowB.scrollWidth;
 
     await new Promise((r) => setTimeout(r, speed));
   }
 
-  // show result
   output.textContent = `
 Final Score:
 A: ${final.scoreA}
@@ -73,9 +76,16 @@ Winner: ${
         ? "B"
         : "Tie"
   }
+
+Player A:
+Cooperate: ${coopA}
+Defect: ${defectA}
+
+Player B:
+Cooperate: ${coopB}
+Defect: ${defectB}
 `;
 
-  // ✅ ADD THIS PART (leaderboard update)
   updateLeaderboard(
     strategyASelect.value,
     strategyBSelect.value,
@@ -87,7 +97,6 @@ Winner: ${
   renderChart();
 };
 
-// leaderboard render
 function renderLeaderboard() {
   const board = loadLeaderboard();
   const container = document.getElementById("leaderboard");
@@ -117,8 +126,7 @@ function renderLeaderboard() {
     .join("");
 }
 
-// simple chart (needs Chart.js in HTML)
-let chart;
+// chart - need to complete
 
 function renderChart() {
   const board = loadLeaderboard();

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <title>IPD Simulator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h2>Iterated Prisoner's Dilemma</h2>
+
+    Rounds:
+    <input id="rounds" type="number" value="50" /><br /><br />
+
+    Speed (ms):
+    <input id="speed" type="number" value="100" /><br /><br />
+
+    Strategy A:
+    <select id="strategyA"></select
+    ><br /><br />
+
+    Strategy B:
+    <select id="strategyB"></select
+    ><br /><br />
+
+    Noise (0–1):
+    <input id="noise" type="number" step="0.01" value="0" />
+    <br /><br />
+
+    <button onclick="run()">Run Simulation</button>
+
+    <h3>Player A</h3>
+    <div id="rowA" style="display: flex; gap: 4px; overflow-x: auto"></div>
+
+    <h3>Player B</h3>
+    <div id="rowB" style="display: flex; gap: 4px; overflow-x: auto"></div>
+
+    <pre id="output"></pre>
+    <h3>Leaderboard</h3>
+    <div id="leaderboard"></div>
+
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

@@ -13,8 +13,8 @@ Object.keys(Strategies).forEach((name) => {
 function createCircle(move) {
   const div = document.createElement("div");
 
-  div.style.width = "20px";
-  div.style.height = "20px";
+  div.style.width = "50px";
+  div.style.height = "50px";
   div.style.borderRadius = "50%";
   div.style.flexShrink = "0";
 
@@ -65,9 +65,8 @@ window.run = async function () {
     rowA.appendChild(createCircle(result.moveA));
     rowB.appendChild(createCircle(result.moveB));
 
-    rowA.scrollLeft = rowA.scrollWidth;
-    rowB.scrollLeft = rowB.scrollWidth;
-
+rowA.scrollTo({ left: rowA.scrollWidth, behavior: "smooth" });
+rowB.scrollTo({ left: rowB.scrollWidth, behavior: "smooth" });
     await new Promise((r) => setTimeout(r, speed));
   }
 

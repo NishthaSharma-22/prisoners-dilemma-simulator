@@ -6,27 +6,35 @@
   </head>
   <body>
     <h2>Iterated Prisoner's Dilemma</h2>
+    <div class="container">
+      <div class="form-row">
+        <label for="rounds">Rounds</label>
+        <input id="rounds" type="number" value="50" />
+      </div>
 
-    Rounds:
-    <input id="rounds" type="number" value="50" /><br /><br />
+      <div class="form-row">
+        <label for="speed">Speed (ms)</label>
+        <input id="speed" type="number" value="100" />
+      </div>
 
-    Speed (ms):
-    <input id="speed" type="number" value="100" /><br /><br />
+      <div class="form-row">
+        <label for="strategyA">Strategy A</label>
+        <select id="strategyA"></select>
+      </div>
 
-    Strategy A:
-    <select id="strategyA"></select
-    ><br /><br />
+      <div class="form-row">
+        <label for="strategyB">Strategy B</label>
+        <select id="strategyB"></select>
+      </div>
 
-    Strategy B:
-    <select id="strategyB"></select
-    ><br /><br />
-
-    Noise (0–1):
-    <input id="noise" type="number" step="0.01" value="0" />
-    <br /><br />
-
-    <button onclick="run()">Run Simulation</button>
-
+      <div class="form-row">
+        <label for="noise">Noise (0–1)</label>
+        <input id="noise" type="number" step="0.01" value="0" />
+      </div>
+      <div>
+        <button onclick="run()" style="margin-top: 10px;">Run Simulation</button>
+      </div></div>
+    </div>
     <h3>Player A</h3>
     <div id="rowA" style="display: flex; gap: 4px; overflow-x: auto"></div>
 

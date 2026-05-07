@@ -2,12 +2,27 @@ import { createSimulation } from "./engine/stepSimulation.js";
 import { Strategies } from "./strategies/index.js";
 import { updateLeaderboard, loadLeaderboard } from "./utils/leaderboard.js";
 
+const strategyLabels = {
+  alwaysCooperate: "Always Cooperate",
+  alwaysDefect: "Always Defect",
+  random: "Random",
+  titForTat: "Tit for Tat",
+  grimTrigger: "Grim Trigger",
+  forgivingTitForTat: "Forgiving Tit for Tat",
+  suspiciousTFT: "Suspicious Tit for Tat",
+  pavlov: "Pavlov (Win-Stay Lose-Shift)",
+  detective: "Detective",
+  learner: "Learning Agent",
+};
+
 const strategyASelect = document.getElementById("strategyA");
 const strategyBSelect = document.getElementById("strategyB");
 
 Object.keys(Strategies).forEach((name) => {
-  strategyASelect.add(new Option(name, name));
-  strategyBSelect.add(new Option(name, name));
+  const label = strategyLabels[name] || name;
+
+  strategyASelect.add(new Option(label, name));
+  strategyBSelect.add(new Option(label, name));
 });
 
 function createCircle(move) {
@@ -65,8 +80,8 @@ window.run = async function () {
     rowA.appendChild(createCircle(result.moveA));
     rowB.appendChild(createCircle(result.moveB));
 
-rowA.scrollTo({ left: rowA.scrollWidth, behavior: "smooth" });
-rowB.scrollTo({ left: rowB.scrollWidth, behavior: "smooth" });
+    rowA.scrollTo({ left: rowA.scrollWidth, behavior: "smooth" });
+    rowB.scrollTo({ left: rowB.scrollWidth, behavior: "smooth" });
     await new Promise((r) => setTimeout(r, speed));
   }
 
@@ -83,12 +98,12 @@ Winner: ${
   }
 
     Player A:
-Cooperate: ${coopA} (${coopA / rounds * 100}%)
-Defect: ${defectA} (${defectA / rounds * 100}%)
+Cooperate: ${coopA} (${(coopA / rounds) * 100}%)
+Defect: ${defectA} (${(defectA / rounds) * 100}%)
 
     Player B:
-Cooperate: ${coopB} (${coopB / rounds * 100}%)
-Defect: ${defectB} (${defectB / rounds * 100}%)
+Cooperate: ${coopB} (${(coopB / rounds) * 100}%)
+Defect: ${defectB} (${(defectB / rounds) * 100}%)
 `;
 
   updateLeaderboard(
@@ -120,8 +135,7 @@ function renderLeaderboard() {
     .map(
       (e) => `
       <div>
-        <b>${e.name}</b> —
-        Avg: ${e.avg.toFixed(2)} |
+<b>${strategyLabels[e.name] || e.name}</b>        Avg: ${e.avg.toFixed(2)} |
         Total: ${e.total} |
         Games: ${e.games}
       </div>

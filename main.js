@@ -17,6 +17,10 @@ const strategyLabels = {
 
 const strategyASelect = document.getElementById("strategyA");
 const strategyBSelect = document.getElementById("strategyB");
+const runBtn = document.getElementById("runBtn");
+const stopBtn = document.getElementById("stopBtn");
+let isRunning = false;
+let stopRequested = false;
 
 Object.keys(Strategies).forEach((name) => {
   const label = strategyLabels[name] || name;
@@ -25,7 +29,7 @@ Object.keys(Strategies).forEach((name) => {
   strategyBSelect.add(new Option(label, name));
 });
 
-function createCircle(move) {
+function createCircle(move, round) {
   const div = document.createElement("div");
 
   div.style.width = "50px";
@@ -33,69 +37,90 @@ function createCircle(move) {
   div.style.borderRadius = "50%";
   div.style.flexShrink = "0";
 
+  div.style.display = "flex";
+  div.style.alignItems = "center";
+  div.style.justifyContent = "center";
+
+  div.style.fontSize = "20px";
+  div.style.color = "white";
+  div.style.fontWeight = "bold";
+
   div.style.backgroundColor = move === "C" ? "green" : "red";
+
+  div.textContent = round;
 
   return div;
 }
 
+stopBtn.addEventListener("click", () => {
+  stopRequested = true;
+});
+
 window.run = async function () {
-  const rounds = Number(document.getElementById("rounds").value);
-  const speed = Number(document.getElementById("speed").value);
+  if (isRunning) return;
+  isRunning = true;
+  runBtn.disabled = true;
+  stopRequested = false;
 
-  const strategyA = Strategies[strategyASelect.value];
-  const strategyB = Strategies[strategyBSelect.value];
-  const noise = Number(document.getElementById("noise").value);
+  try {
+    const rounds = Number(document.getElementById("rounds").value);
+    const speed = Number(document.getElementById("speed").value);
 
-  const sim = createSimulation({
-    strategyA,
-    strategyB,
-    payoff: { T: 5, R: 3, P: 1, S: 0 },
-    noise,
-  });
+    const strategyA = Strategies[strategyASelect.value];
+    const strategyB = Strategies[strategyBSelect.value];
+    const noise = Number(document.getElementById("noise").value);
 
-  const rowA = document.getElementById("rowA");
-  const rowB = document.getElementById("rowB");
-  const output = document.getElementById("output");
+    const sim = createSimulation({
+      strategyA,
+      strategyB,
+      payoff: { T: 5, R: 3, P: 1, S: 0 },
+      noise,
+    });
 
-  rowA.innerHTML = "";
-  rowB.innerHTML = "";
+    const rowA = document.getElementById("rowA");
+    const rowB = document.getElementById("rowB");
+    const output = document.getElementById("output");
 
-  let final;
+    rowA.innerHTML = "";
+    rowB.innerHTML = "";
 
-  let coopA = 0;
-  let defectA = 0;
-  let coopB = 0;
-  let defectB = 0;
+    let final;
 
-  for (let i = 0; i < rounds; i++) {
-    const result = sim.step();
-    final = result;
+    let coopA = 0;
+    let defectA = 0;
+    let coopB = 0;
+    let defectB = 0;
 
-    if (result.moveA === "C") coopA++;
-    else defectA++;
+    for (let i = 0; i < rounds; i++) {
+      if (stopRequested) break;
+      const result = sim.step();
+      final = result;
 
-    if (result.moveB === "C") coopB++;
-    else defectB++;
+      if (result.moveA === "C") coopA++;
+      else defectA++;
 
-    rowA.appendChild(createCircle(result.moveA));
-    rowB.appendChild(createCircle(result.moveB));
+      if (result.moveB === "C") coopB++;
+      else defectB++;
 
-    rowA.scrollTo({ left: rowA.scrollWidth, behavior: "smooth" });
-    rowB.scrollTo({ left: rowB.scrollWidth, behavior: "smooth" });
-    await new Promise((r) => setTimeout(r, speed));
-  }
+      rowA.appendChild(createCircle(result.moveA, i + 1));
+      rowB.appendChild(createCircle(result.moveB, i + 1));
 
-  output.textContent = `
+      rowA.scrollTo({ left: rowA.scrollWidth });
+      rowB.scrollTo({ left: rowB.scrollWidth });
+      await new Promise((r) => setTimeout(r, speed));
+    }
+
+    output.textContent = `
 Final Score:
 A: ${final.scoreA}
 B: ${final.scoreB}
 Winner: ${
-    final.scoreA > final.scoreB
-      ? "A"
-      : final.scoreB > final.scoreA
-        ? "B"
-        : "Tie"
-  }
+      final.scoreA > final.scoreB
+        ? "A"
+        : final.scoreB > final.scoreA
+          ? "B"
+          : "Tie"
+    }
 
     Player A:
 Cooperate: ${coopA} (${(coopA / rounds) * 100}%)
@@ -106,15 +131,20 @@ Cooperate: ${coopB} (${(coopB / rounds) * 100}%)
 Defect: ${defectB} (${(defectB / rounds) * 100}%)
 `;
 
-  updateLeaderboard(
-    strategyASelect.value,
-    strategyBSelect.value,
-    final.scoreA,
-    final.scoreB,
-  );
+    updateLeaderboard(
+      strategyASelect.value,
+      strategyBSelect.value,
+      final.scoreA,
+      final.scoreB,
+    );
 
-  renderLeaderboard();
-  renderChart();
+    renderLeaderboard();
+    renderChart();
+  } finally {
+    isRunning = false;
+    runBtn.disabled = false;
+    stopBtn.disabled = true;
+  }
 };
 function renderLeaderboard() {
   const board = loadLeaderboard();

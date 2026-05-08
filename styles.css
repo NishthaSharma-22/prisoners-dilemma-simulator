@@ -69,6 +69,7 @@ button:hover {
 #rowA,
 #rowB {
   display: flex;
+  flex-wrap: nowrap;   
   gap: 6px;
   width: 90%;
   margin: auto;
